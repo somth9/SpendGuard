@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-// Auth functions
 export const logoutUser = () => signOut(auth);
 
 export const signInWithGoogle = async () => {
@@ -28,7 +27,6 @@ export const signInWithGoogle = async () => {
   }
 };
 
-// Firestore functions
 export const addDocument = (collectionName: string, data: any) =>
   addDoc(collection(db, collectionName), data);
 
@@ -46,7 +44,6 @@ export const updateDocument = (collectionName: string, id: string, data: any) =>
 export const deleteDocument = (collectionName: string, id: string) =>
   deleteDoc(doc(db, collectionName, id));
 
-// Storage functions
 export const uploadFile = async (file: File, path: string) => {
   const storageRef = ref(storage, path);
   await uploadBytes(storageRef, file);

@@ -10,6 +10,7 @@ interface AuthContextType {
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signInWithGoogle: async () => {},
   signOut: async () => {},
+  logout: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -24,20 +26,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.error('Firebase auth not properly initialized!');
       setLoading(false);
-    });
+      return;
+    }
+    
+    const failsafeTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
 
-    return () => unsubscribe();
+    try {
+      const unsubscribe = auth.onAuthStateChanged(
+        (user) => {
+          setUser(user);
+          setLoading(false);
+          clearTimeout(failsafeTimeout);
+        },
+        (error) => {
+          console.error('Auth state change error:', error);
+          setLoading(false);
+          clearTimeout(failsafeTimeout);
+        }
+      );
+
+      return () => {
+        unsubscribe();
+        clearTimeout(failsafeTimeout);
+      };
+    } catch (error) {
+      console.error('Error setting up auth listener:', error);
+      setLoading(false);
+      clearTimeout(failsafeTimeout);
+    }
   }, []);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Error signing in with Google", error);
+    } catch (error: any) {
+      console.error("Error signing in with Google:", error);
+      alert(`Sign in failed: ${error.message}`);
     }
   };
 
@@ -45,12 +75,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await firebaseSignOut(auth);
     } catch (error) {
-      console.error("Error signing out", error);
+      console.error("Error signing out:", error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut: signOutUser }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut: signOutUser, logout: signOutUser }}>
       {children}
     </AuthContext.Provider>
   );

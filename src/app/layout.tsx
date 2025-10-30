@@ -1,4 +1,6 @@
 import "./globals.css";
+import { AuthProvider } from "@/lib/contexts/AuthContext";
+import { SpendGuardProvider } from "@/lib/contexts/SpendGuardContext";
 
 export default function RootLayout({
   children,
@@ -7,7 +9,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>
+          <SpendGuardProvider>
+            {children}
+          </SpendGuardProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
