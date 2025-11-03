@@ -117,13 +117,6 @@ src/
 
 The app can be deployed to any platform that supports Next.js. Make sure to set all required environment variables in your hosting platform's configuration.
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
 ## License
 
 Private - All rights reserved
