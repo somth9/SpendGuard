@@ -115,15 +115,6 @@ src/
 
 ## Deployment
 
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import your repository in [Vercel](https://vercel.com)
-3. Add environment variables in Vercel project settings
-4. Deploy!
-
-### Other Platforms
-
 The app can be deployed to any platform that supports Next.js. Make sure to set all required environment variables in your hosting platform's configuration.
 
 ## Contributing
